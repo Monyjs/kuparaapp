@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<title>التسامح</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Tahoma, Arial;
+background:white;
+direction:rtl;
+text-align:center;
+overflow-x:hidden;
+}
+
+/* الصفحة الأولى */
+
+#welcome{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+padding:15px;
+box-sizing:border-box;
+}
+
+.logo{
+width:180px;
+max-width:70%;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+animation:logoAppear 2s ease forwards, breath 4s infinite ease-in-out 2s;
+}
+
+@keyframes logoAppear{
+from{opacity:0; transform:scale(0.5);}
+to{opacity:1; transform:scale(1);}
+}
+
+@keyframes breath{
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+}
+
+.title{
+font-size:34px;
+color:red;
+font-weight:bold;
+margin:20px;
+}
+
+.start-btn{
+background:#27ae60;
+color:white;
+border:none;
+padding:14px 40px;
+font-size:18px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.message{
+margin-top:25px;
+color:red;
+font-size:16px;
+width:90%;
+max-width:420px;
+}
+
+.designer{
+position:absolute;
+bottom:10px;
+font-size:12px;
+color:black;
+width:100%;
+text-align:center;
+}
+
+/* صفحة الجدول */
+
+#formPage{
+display:none;
+padding:10px;
+height:100vh;
+overflow-y:auto;
+box-sizing:border-box;
+}
+
+.back-btn{
+background:black;
+color:white;
+border:none;
+padding:10px 20px;
+margin-bottom:10px;
+border-radius:8px;
+font-size:14px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:15px;
+}
+
+td{
+border:2px solid black;
+padding:10px;
+text-align:right;
+}
+
+input[type=text],input[type=tel]{
+width:95%;
+padding:8px;
+font-size:15px;
+}
+
+.options label{
+display:block;
+margin:4px 0;
+}
+
+.submit-btn{
+background:#27ae60;
+color:white;
+border:none;
+padding:14px;
+width:100%;
+font-size:18px;
+margin-top:15px;
+border-radius:8px;
+}
+
+.footer{
+margin-top:10px;
+font-size:12px;
+color:black;
+padding-bottom:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="welcome">
+
+<img src="https://i.pinimg.com/736x/84/df/77/84df77980c4741b052553a23a2aa3057.jpg" class="logo">
+
+<div class="title">التسامح</div>
+
+<button class="start-btn" onclick="openForm()">ابدأ</button>
+
+<div class="message">
+مرحبا بك في متجر التسامح للصيانة والخدمات الالكترونية بجودة وسرعة عالية.
+</div>
+
+<div class="designer">
+Designed by: Abdalla Hashim Merghani
+</div>
+
+</div>
+
+
+<div id="formPage">
+
+<button class="back-btn" onclick="goBack()">رجوع</button>
+
+<table>
+
+<tr>
+<td>الاسم</td>
+<td><input type="text" id="name"></td>
+</tr>
+
+<tr>
+<td>نوع الهاتف</td>
+<td class="options">
+
+<label><input type="radio" name="phone" value="Samsung"> Samsung</label>
+<label><input type="radio" name="phone" value="Huawei"> Huawei</label>
+<label><input type="radio" name="phone" value="Xiaomi"> Xiaomi</label>
+<label><input type="radio" name="phone" value="Honor"> Honor</label>
+<label><input type="radio" name="phone" value="Tecno"> Tecno</label>
+<label><input type="radio" name="phone" value="Apple"> Apple</label>
+<label><input type="radio" name="phone" value="Realme"> Realme</label>
+<label><input type="radio" name="phone" value="Vivo"> Vivo</label>
+
+<label>
+<input type="radio" name="phone" value="Other" onclick="showOtherPhone()"> جهاز اخر
+</label>
+
+<div id="otherPhoneBox" style="display:none;">
+<input type="text" id="otherPhone" placeholder="اكتب نوع الهاتف">
+</div>
+
+</td>
+</tr>
+
+<tr>
+<td>مشكلة الهاتف</td>
+
+<td class="options">
+
+<label><input type="radio" name="problem" value="شاشة" onclick="hideOtherProblem()"> شاشة</label>
+<label><input type="radio" name="problem" value="بطارية" onclick="hideOtherProblem()"> بطارية</label>
+<label><input type="radio" name="problem" value="سوكت" onclick="hideOtherProblem()"> سوكت</label>
+<label><input type="radio" name="problem" value="فرمتة" onclick="hideOtherProblem()"> فرمتة</label>
+<label><input type="radio" name="problem" value="فحص" onclick="hideOtherProblem()"> فحص</label>
+
+<label>
+<input type="radio" name="problem" value="اخرى" onclick="showOtherProblem()"> اخرى
+</label>
+
+<div id="otherProblemBox" style="display:none;">
+<input type="text" id="otherProblem" placeholder="اكتب المشكلة">
+</div>
+
+</td>
+</tr>
+
+<tr>
+<td>رقم الهاتف</td>
+<td><input type="tel" id="phoneNumber"></td>
+</tr>
+
+</table>
+
+<button class="submit-btn" onclick="sendTelegram()">وضع طلب</button>
+
+<div class="footer">
+للاستفسار: 0100143447
+</div>
+
+</div>
+
+
+<script>
+
+function openForm(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("formPage").style.display="block";
+}
+
+function goBack(){
+document.getElementById("formPage").style.display="none";
+document.getElementById("welcome").style.display="flex";
+}
+
+function showOtherPhone(){
+document.getElementById("otherPhoneBox").style.display="block";
+}
+
+function showOtherProblem(){
+document.getElementById("otherProblemBox").style.display="block";
+}
+
+function hideOtherProblem(){
+document.getElementById("otherProblemBox").style.display="none";
+}
+
+function sendTelegram(){
+
+let name=document.getElementById("name").value;
+let phoneNumber=document.getElementById("phoneNumber").value;
+let otherProblem=document.getElementById("otherProblem").value;
+let otherPhone=document.getElementById("otherPhone").value;
+
+let phone=document.querySelector('input[name="phone"]:checked');
+let problem=document.querySelector('input[name="problem"]:checked');
+
+phone=phone?phone.value:"";
+problem=problem?problem.value:"";
+
+if(phone=="Other"){
+phone="جهاز اخر: "+otherPhone;
+}
+
+if(problem=="اخرى"){
+problem="اخرى: "+otherProblem;
+}
+
+let text=
+"طلب صيانة جديد %0A"+
+"الاسم: "+name+"%0A"+
+"نوع الهاتف: "+phone+"%0A"+
+"المشكلة: "+problem+"%0A"+
+"رقم الهاتف: "+phoneNumber;
+
+let token="8620736182:AAFwcp0fsNH7WSiPm2AVDh3qWrsCf_m4ZTA";
+let chat_id="8331036866";
+
+let url="https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id+"&text="+text;
+
+fetch(url);
+
+alert("تم ارسال الطلب بنجاح");
+
+}
+
+</script>
+
+</body>
+</html>
