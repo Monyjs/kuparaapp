@@ -3,7 +3,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>التسامح</title>
@@ -13,7 +12,6 @@
 body{
 margin:0;
 font-family:Tahoma, Arial;
-background:white;
 direction:rtl;
 text-align:center;
 overflow-x:hidden;
@@ -29,6 +27,11 @@ align-items:center;
 height:100vh;
 padding:15px;
 box-sizing:border-box;
+
+background:url("https://i.pinimg.com/736x/13/3e/8e/133e8e80a18f6b7afddcce73a38f82da.jpg");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 }
 
 .logo{
@@ -69,10 +72,13 @@ cursor:pointer;
 
 .message{
 margin-top:25px;
-color:red;
+color:black;
 font-size:16px;
 width:90%;
 max-width:420px;
+background:rgba(255,255,255,0.75);
+padding:8px;
+border-radius:8px;
 }
 
 .designer{
@@ -92,6 +98,7 @@ padding:10px;
 height:100vh;
 overflow-y:auto;
 box-sizing:border-box;
+background:white;
 }
 
 .back-btn{
@@ -143,6 +150,21 @@ margin-top:10px;
 font-size:12px;
 color:black;
 padding-bottom:10px;
+}
+
+/* رسالة النجاح */
+
+#successMessage{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px 30px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.3);
+font-size:18px;
 }
 
 </style>
@@ -241,6 +263,10 @@ Designed by: Abdalla Hashim Merghani
 
 </div>
 
+<div id="successMessage">
+تم ارسال الطلب بنجاح
+</div>
+
 
 <script>
 
@@ -301,7 +327,11 @@ let url="https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id+"&t
 
 fetch(url);
 
-alert("تم ارسال الطلب بنجاح");
+document.getElementById("successMessage").style.display="block";
+
+setTimeout(()=>{
+document.getElementById("successMessage").style.display="none";
+},3000);
 
 }
 
