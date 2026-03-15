@@ -60,6 +60,48 @@ font-weight:bold;
 margin:20px;
 }
 
+/* سلايدر الصور */
+
+.slider{
+width:90%;
+max-width:420px;
+height:150px;
+overflow:hidden;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.slides{
+display:flex;
+width:500%;
+animation:slideMove 10s infinite;
+}
+
+.slides img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+@keyframes slideMove{
+
+0%{transform:translateX(0);}
+20%{transform:translateX(0);}
+
+25%{transform:translateX(-100%);}
+40%{transform:translateX(-100%);}
+
+45%{transform:translateX(-200%);}
+60%{transform:translateX(-200%);}
+
+65%{transform:translateX(-300%);}
+80%{transform:translateX(-300%);}
+
+85%{transform:translateX(-400%);}
+100%{transform:translateX(-400%);}
+
+}
+
 .start-btn{
 background:#27ae60;
 color:white;
@@ -189,6 +231,24 @@ font-size:18px;
 
 <div class="title">التسامح</div>
 
+<!-- الصور التي طلبتها -->
+
+<div class="slider">
+<div class="slides">
+
+<img src="https://i.pinimg.com/736x/ff/73/a9/ff73a9af00b517a91db2fc96e71f187e.jpg">
+
+<img src="https://i.pinimg.com/1200x/00/c1/30/00c13025f4560d2d4f154dd304636e7c.jpg">
+
+<img src="https://i.pinimg.com/1200x/a6/2f/0f/a62f0f994521004b5d6617a7a951d7d6.jpg">
+
+<img src="https://i.pinimg.com/1200x/cb/e5/c5/cbe5c54a8e6767befe026713a763926f.jpg">
+
+<img src="https://i.pinimg.com/736x/c1/af/32/c1af3293da36fc068725b72fc88ff85e.jpg">
+
+</div>
+</div>
+
 <button class="start-btn" onclick="openForm()">ابدأ</button>
 
 <div class="message">
@@ -286,6 +346,8 @@ Designed by: Abdalla Hashim Merghani
 <div id="successMessage"></div>
 
 <script>
+
+/* نفس كود الجافاسكربت بدون أي حذف */
 
 let privateCode="";
 
