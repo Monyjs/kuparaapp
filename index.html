@@ -60,46 +60,14 @@ font-weight:bold;
 margin:20px;
 }
 
-/* سلايدر الصور */
-
-.slider{
+.singleImage{
 width:90%;
 max-width:420px;
-height:150px;
-overflow:hidden;
-border-radius:10px;
-margin-bottom:20px;
-}
-
-.slides{
-display:flex;
-width:500%;
-animation:slideMove 10s infinite;
-}
-
-.slides img{
-width:100%;
-height:150px;
+height:160px;
 object-fit:cover;
-}
-
-@keyframes slideMove{
-
-0%{transform:translateX(0);}
-20%{transform:translateX(0);}
-
-25%{transform:translateX(-100%);}
-40%{transform:translateX(-100%);}
-
-45%{transform:translateX(-200%);}
-60%{transform:translateX(-200%);}
-
-65%{transform:translateX(-300%);}
-80%{transform:translateX(-300%);}
-
-85%{transform:translateX(-400%);}
-100%{transform:translateX(-400%);}
-
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+margin-bottom:20px;
 }
 
 .start-btn{
@@ -231,23 +199,7 @@ font-size:18px;
 
 <div class="title">التسامح</div>
 
-<!-- الصور التي طلبتها -->
-
-<div class="slider">
-<div class="slides">
-
-<img src="https://i.pinimg.com/736x/ff/73/a9/ff73a9af00b517a91db2fc96e71f187e.jpg">
-
-<img src="https://i.pinimg.com/1200x/00/c1/30/00c13025f4560d2d4f154dd304636e7c.jpg">
-
-<img src="https://i.pinimg.com/1200x/a6/2f/0f/a62f0f994521004b5d6617a7a951d7d6.jpg">
-
-<img src="https://i.pinimg.com/1200x/cb/e5/c5/cbe5c54a8e6767befe026713a763926f.jpg">
-
-<img src="https://i.pinimg.com/736x/c1/af/32/c1af3293da36fc068725b72fc88ff85e.jpg">
-
-</div>
-</div>
+<img class="singleImage" src="https://i.pinimg.com/736x/e3/96/65/e39665d40d1630a4e9e05bcc4fa110b0.jpg">
 
 <button class="start-btn" onclick="openForm()">ابدأ</button>
 
@@ -277,18 +229,22 @@ Designed by: Abdalla Hashim Merghani
 <td>نوع الهاتف</td>
 <td class="options">
 
-<label><input type="radio" name="phone" value="Samsung" onclick="generateCode()"> Samsung</label>
-<label><input type="radio" name="phone" value="Huawei" onclick="generateCode()"> Huawei</label>
-<label><input type="radio" name="phone" value="Xiaomi" onclick="generateCode()"> Xiaomi</label>
-<label><input type="radio" name="phone" value="Honor" onclick="generateCode()"> Honor</label>
-<label><input type="radio" name="phone" value="Tecno" onclick="generateCode()"> Tecno</label>
-<label><input type="radio" name="phone" value="Apple" onclick="generateCode()"> Apple</label>
-<label><input type="radio" name="phone" value="Realme" onclick="generateCode()"> Realme</label>
-<label><input type="radio" name="phone" value="Vivo" onclick="generateCode()"> Vivo</label>
+<label><input type="radio" name="phone" value="Samsung" onclick="showPhoneModel('Samsung');generateCode()"> Samsung</label>
+<label><input type="radio" name="phone" value="Huawei" onclick="showPhoneModel('Huawei');generateCode()"> Huawei</label>
+<label><input type="radio" name="phone" value="Xiaomi" onclick="showPhoneModel('Xiaomi');generateCode()"> Xiaomi</label>
+<label><input type="radio" name="phone" value="Honor" onclick="showPhoneModel('Honor');generateCode()"> Honor</label>
+<label><input type="radio" name="phone" value="Tecno" onclick="showPhoneModel('Tecno');generateCode()"> Tecno</label>
+<label><input type="radio" name="phone" value="Apple" onclick="showPhoneModel('Apple');generateCode()"> Apple</label>
+<label><input type="radio" name="phone" value="Realme" onclick="showPhoneModel('Realme');generateCode()"> Realme</label>
+<label><input type="radio" name="phone" value="Vivo" onclick="showPhoneModel('Vivo');generateCode()"> Vivo</label>
 
 <label>
 <input type="radio" name="phone" value="Other" onclick="showOtherPhone();generateCode()"> جهاز اخر
 </label>
+
+<div id="phoneModelBox" style="display:none;">
+<input type="text" id="phoneModel" placeholder="">
+</div>
 
 <div id="otherPhoneBox" style="display:none;">
 <input type="text" id="otherPhone" placeholder="اكتب نوع الهاتف" oninput="generateCode()">
@@ -347,8 +303,6 @@ Designed by: Abdalla Hashim Merghani
 
 <script>
 
-/* نفس كود الجافاسكربت بدون أي حذف */
-
 let privateCode="";
 
 function openForm(){
@@ -359,6 +313,11 @@ document.getElementById("formPage").style.display="block";
 function goBack(){
 document.getElementById("formPage").style.display="none";
 document.getElementById("welcome").style.display="flex";
+}
+
+function showPhoneModel(name){
+document.getElementById("phoneModelBox").style.display="block";
+document.getElementById("phoneModel").placeholder=name;
 }
 
 function showOtherPhone(){
@@ -400,6 +359,7 @@ function sendTelegram(){
 
 let name=document.getElementById("name").value;
 let phoneNumber=document.getElementById("phoneNumber").value;
+let phoneModel=document.getElementById("phoneModel").value;
 let otherProblem=document.getElementById("otherProblem").value;
 let otherPhone=document.getElementById("otherPhone").value;
 
@@ -421,6 +381,7 @@ let text=
 "طلب صيانة جديد %0A"+
 "الاسم: "+name+"%0A"+
 "نوع الهاتف: "+phone+"%0A"+
+"موديل الهاتف: "+phoneModel+"%0A"+
 "المشكلة: "+problem+"%0A"+
 "رقم الهاتف: "+phoneNumber+"%0A"+
 "الكود الخاص: "+privateCode;
@@ -457,4 +418,3 @@ document.getElementById("successMessage").style.display="none";
 
 </body>
 </html>
-
