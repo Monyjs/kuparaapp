@@ -152,6 +152,17 @@ color:black;
 padding-bottom:10px;
 }
 
+/* مربعات الكود */
+
+.codeBox{
+width:40px;
+height:40px;
+text-align:center;
+font-size:18px;
+margin:3px;
+border:2px solid black;
+}
+
 /* رسالة النجاح */
 
 #successMessage{
@@ -199,28 +210,28 @@ Designed by: Abdalla Hashim Merghani
 
 <tr>
 <td>الاسم</td>
-<td><input type="text" id="name"></td>
+<td><input type="text" id="name" oninput="generateCode()"></td>
 </tr>
 
 <tr>
 <td>نوع الهاتف</td>
 <td class="options">
 
-<label><input type="radio" name="phone" value="Samsung"> Samsung</label>
-<label><input type="radio" name="phone" value="Huawei"> Huawei</label>
-<label><input type="radio" name="phone" value="Xiaomi"> Xiaomi</label>
-<label><input type="radio" name="phone" value="Honor"> Honor</label>
-<label><input type="radio" name="phone" value="Tecno"> Tecno</label>
-<label><input type="radio" name="phone" value="Apple"> Apple</label>
-<label><input type="radio" name="phone" value="Realme"> Realme</label>
-<label><input type="radio" name="phone" value="Vivo"> Vivo</label>
+<label><input type="radio" name="phone" value="Samsung" onclick="generateCode()"> Samsung</label>
+<label><input type="radio" name="phone" value="Huawei" onclick="generateCode()"> Huawei</label>
+<label><input type="radio" name="phone" value="Xiaomi" onclick="generateCode()"> Xiaomi</label>
+<label><input type="radio" name="phone" value="Honor" onclick="generateCode()"> Honor</label>
+<label><input type="radio" name="phone" value="Tecno" onclick="generateCode()"> Tecno</label>
+<label><input type="radio" name="phone" value="Apple" onclick="generateCode()"> Apple</label>
+<label><input type="radio" name="phone" value="Realme" onclick="generateCode()"> Realme</label>
+<label><input type="radio" name="phone" value="Vivo" onclick="generateCode()"> Vivo</label>
 
 <label>
-<input type="radio" name="phone" value="Other" onclick="showOtherPhone()"> جهاز اخر
+<input type="radio" name="phone" value="Other" onclick="showOtherPhone();generateCode()"> جهاز اخر
 </label>
 
 <div id="otherPhoneBox" style="display:none;">
-<input type="text" id="otherPhone" placeholder="اكتب نوع الهاتف">
+<input type="text" id="otherPhone" placeholder="اكتب نوع الهاتف" oninput="generateCode()">
 </div>
 
 </td>
@@ -231,18 +242,18 @@ Designed by: Abdalla Hashim Merghani
 
 <td class="options">
 
-<label><input type="radio" name="problem" value="شاشة" onclick="hideOtherProblem()"> شاشة</label>
-<label><input type="radio" name="problem" value="بطارية" onclick="hideOtherProblem()"> بطارية</label>
-<label><input type="radio" name="problem" value="سوكت" onclick="hideOtherProblem()"> سوكت</label>
-<label><input type="radio" name="problem" value="فرمتة" onclick="hideOtherProblem()"> فرمتة</label>
-<label><input type="radio" name="problem" value="فحص" onclick="hideOtherProblem()"> فحص</label>
+<label><input type="radio" name="problem" value="شاشة" onclick="hideOtherProblem();generateCode()"> شاشة</label>
+<label><input type="radio" name="problem" value="بطارية" onclick="hideOtherProblem();generateCode()"> بطارية</label>
+<label><input type="radio" name="problem" value="سوكت" onclick="hideOtherProblem();generateCode()"> سوكت</label>
+<label><input type="radio" name="problem" value="فرمتة" onclick="hideOtherProblem();generateCode()"> فرمتة</label>
+<label><input type="radio" name="problem" value="فحص" onclick="hideOtherProblem();generateCode()"> فحص</label>
 
 <label>
-<input type="radio" name="problem" value="اخرى" onclick="showOtherProblem()"> اخرى
+<input type="radio" name="problem" value="اخرى" onclick="showOtherProblem();generateCode()"> اخرى
 </label>
 
 <div id="otherProblemBox" style="display:none;">
-<input type="text" id="otherProblem" placeholder="اكتب المشكلة">
+<input type="text" id="otherProblem" placeholder="اكتب المشكلة" oninput="generateCode()">
 </div>
 
 </td>
@@ -250,7 +261,16 @@ Designed by: Abdalla Hashim Merghani
 
 <tr>
 <td>رقم الهاتف</td>
-<td><input type="tel" id="phoneNumber"></td>
+<td><input type="tel" id="phoneNumber" oninput="generateCode()"></td>
+</tr>
+
+<tr>
+<td>الكود الخاص</td>
+<td>
+<input class="codeBox" id="c1" readonly>
+<input class="codeBox" id="c2" readonly>
+<input class="codeBox" id="c3" readonly>
+</td>
 </tr>
 
 </table>
@@ -263,12 +283,11 @@ Designed by: Abdalla Hashim Merghani
 
 </div>
 
-<div id="successMessage">
-تم ارسال الطلب بنجاح
-</div>
-
+<div id="successMessage"></div>
 
 <script>
+
+let privateCode="";
 
 function openForm(){
 document.getElementById("welcome").style.display="none";
@@ -290,6 +309,29 @@ document.getElementById("otherProblemBox").style.display="block";
 
 function hideOtherProblem(){
 document.getElementById("otherProblemBox").style.display="none";
+}
+
+function generateCode(){
+
+let name=document.getElementById("name").value;
+let phoneNumber=document.getElementById("phoneNumber").value;
+let phone=document.querySelector('input[name="phone"]:checked');
+let problem=document.querySelector('input[name="problem"]:checked');
+
+if(name && phoneNumber && phone && problem){
+
+let n1=Math.floor(Math.random()*10)+1;
+let n2=Math.floor(Math.random()*10)+1;
+let n3=Math.floor(Math.random()*10)+1;
+
+document.getElementById("c1").value=n1;
+document.getElementById("c2").value=n2;
+document.getElementById("c3").value=n3;
+
+privateCode=""+n1+n2+n3;
+
+}
+
 }
 
 function sendTelegram(){
@@ -318,20 +360,34 @@ let text=
 "الاسم: "+name+"%0A"+
 "نوع الهاتف: "+phone+"%0A"+
 "المشكلة: "+problem+"%0A"+
-"رقم الهاتف: "+phoneNumber;
+"رقم الهاتف: "+phoneNumber+"%0A"+
+"الكود الخاص: "+privateCode;
 
-let token="8620736182:AAFwcp0fsNH7WSiPm2AVDh3qWrsCf_m4ZTA";
-let chat_id="8331036866";
+/* البوت الاول */
 
-let url="https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id+"&text="+text;
+let token1="8620736182:AAFwcp0fsNH7WSiPm2AVDh3qWrsCf_m4ZTA";
+let chat_id1="8331036866";
 
-fetch(url);
+let url1="https://api.telegram.org/bot"+token1+"/sendMessage?chat_id="+chat_id1+"&text="+text;
+
+fetch(url1);
+
+/* البوت الثاني */
+
+let token2="8735950920:AAFIiYgDxL541JNKQXtcQk4aDYDAJrPptjU";
+let chat_id2="8285024067";
+
+let url2="https://api.telegram.org/bot"+token2+"/sendMessage?chat_id="+chat_id2+"&text="+text;
+
+fetch(url2);
 
 document.getElementById("successMessage").style.display="block";
+document.getElementById("successMessage").innerHTML=
+"تم ارسال الطلب بنجاح<br><br>الكود الخاص "+privateCode;
 
 setTimeout(()=>{
 document.getElementById("successMessage").style.display="none";
-},3000);
+},4000);
 
 }
 
@@ -339,3 +395,4 @@ document.getElementById("successMessage").style.display="none";
 
 </body>
 </html>
+
