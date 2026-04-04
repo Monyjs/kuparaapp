@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nilechat | دردشة النيل</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --primary: #0ea5e9;
-            --primary-dark: #0284c7;
-            --bg: #f1f5f9;
+            --primary: #0047FF;
+            --primary-dark: #0036CC;
+            --bg: #f0f2f5;
             --card: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --sent: #0ea5e9;
+            --text: #1c1e21;
+            --text-muted: #65676b;
+            --border: #e4e6eb;
+            --sent: #0047FF;
             --received: #ffffff;
-            --error: #ef4444;
+            --error: #fa3e3e;
+            --nav-bg: #ffffff;
+            --chat-bg: #e5ddd5;
+            --bubble-shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode {
+            --bg: #18191a;
+            --card: #242526;
+            --text: #e4e6eb;
+            --text-muted: #b0b3b8;
+            --border: #3e4042;
+            --received: #3a3b3c;
+            --nav-bg: #242526;
+            --chat-bg: #0b141a;
+            --bubble-shadow: rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -60,16 +76,62 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
-            animation: fadeIn 0.3s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--card);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            opacity: 0;
         }
 
         .screen.active {
             display: flex;
+            z-index: 1;
+            opacity: 1;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .screen.slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .screen.slide-out-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .screen.slide-in-right {
+            display: flex;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .screen.slide-in-left {
+            display: flex;
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .btn, .icon-btn, .nav-item, .room-card {
+            position: relative;
+            overflow: hidden;
         }
 
         /* Auth Screen */
@@ -120,12 +182,12 @@
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
             border-radius: 12px;
             background: var(--primary);
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
@@ -145,56 +207,258 @@
             display: none;
         }
 
-        /* Rooms Screen */
-        header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
+        /* Rooms Screen Redesign */
+        .rooms-header {
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--card);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        header h2 { font-size: 1.4rem; color: var(--primary); }
+        .rooms-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(0, 71, 255, 0.1);
+        }
+
+        .search-container {
+            padding: 10px 20px;
+            background: var(--card);
+        }
+
+        .search-bar {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .room-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .room-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .room-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-item:hover {
+            background: var(--bg);
+        }
+
+        .user-item img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-item .user-info {
+            flex: 1;
+        }
+
+        .user-item .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-item .user-status {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .room-details {
+            flex: 1;
+            text-align: right;
+        }
+
+        .room-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .room-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .room-stats {
+            text-align: left;
+        }
+
+        .status-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .status-badge {
+            background: #064e3b;
+            color: #4ade80;
+        }
+
+        .participant-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
 
         .rooms-list {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f8fafc;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .room-card {
-            background: white;
-            padding: 18px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            cursor: pointer;
+        /* Footer Navigation */
+        .footer-nav {
+            background: var(--nav-bg);
+            border-top: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.2s;
+            justify-content: space-around;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
         }
 
-        .room-card:hover { border-color: var(--primary); transform: translateX(-5px); }
-
-        .room-name { font-weight: 700; font-size: 1.1rem; }
-        .room-owner { font-size: 0.8rem; color: var(--text-muted); }
-
-        .add-room-btn {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-size: 2rem;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
             cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.4);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease, background 0.3s ease;
+            flex: 1;
+            padding: 8px 0;
+            border-radius: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(0, 71, 255, 0.08);
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        /* Modal Enhancements */
+        .img-picker {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: 2px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .img-picker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-picker span {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Settings Modal */
+        #settings-modal .modal-box {
+            text-align: center;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-top: 20px;
         }
 
         /* Chat Screen */
@@ -202,53 +466,151 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f1f5f9;
+            background-color: var(--chat-bg);
+            background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
+            background-blend-mode: overlay;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
+            scroll-behavior: smooth;
         }
 
         .msg {
-            max-width: 85%;
-            padding: 10px 16px;
-            border-radius: 18px;
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 20px;
             font-size: 0.95rem;
-            line-height: 1.5;
+            line-height: 1.4;
             position: relative;
+            box-shadow: 0 1px 2px var(--bubble-shadow);
+            animation: msgIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .msg-wrapper.sent {
+            justify-content: flex-end;
+        }
+
+        .msg-wrapper.received {
+            justify-content: flex-start;
+        }
+
+        .msg-wrapper.sent .msg {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .msg-wrapper.received .msg {
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--border);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes msgIn {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .msg.sent {
-            align-self: flex-start;
             background: var(--primary);
             color: white;
-            border-bottom-right-radius: 4px;
+            margin-right: 12px;
+            margin-left: 0;
+        }
+
+        .msg.sent::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            clip-path: polygon(100% 0, 0 100%, 100% 100%);
         }
 
         .msg.received {
-            align-self: flex-end;
-            background: white;
+            background: var(--received);
             color: var(--text);
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-left: 12px;
+            margin-right: 0;
+        }
+
+        .msg.received::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 12px;
+            height: 12px;
+            background: var(--received);
+            clip-path: polygon(0 0, 0% 100%, 100% 100%);
         }
 
         .msg .sender-name {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
             margin-bottom: 4px;
             display: block;
-            opacity: 0.9;
+            color: inherit;
+            opacity: 0.8;
+        }
+
+        #join-overlay {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(5px);
+        }
+
+        body.dark-mode #join-overlay {
+            background: rgba(15, 23, 42, 0.95) !important;
         }
 
         .chat-footer {
-            padding: 15px;
-            background: white;
+            padding: 10px 15px;
+            background: var(--card);
             border-top: 1px solid var(--border);
             display: flex;
+            align-items: flex-end;
             gap: 10px;
         }
 
-        .chat-footer input { flex: 1; border-radius: 25px; padding: 12px 20px; }
+        .chat-footer textarea {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 10px 18px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            resize: none;
+            max-height: 120px;
+            font-size: 1rem;
+            line-height: 1.4;
+            transition: border-color 0.2s;
+        }
+
+        .chat-footer textarea:focus {
+            border-color: var(--primary);
+        }
         .send-btn {
             background: var(--primary);
             color: white;
@@ -272,6 +634,15 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .modal-box {
@@ -280,16 +651,67 @@
             border-radius: 20px;
             width: 100%;
             max-width: 320px;
+            transform: scale(0.8) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal.active .modal-box {
+            transform: scale(1) translateY(0);
         }
 
         .back-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+
+        /* Splash Screen */
+        #splash-screen {
+            justify-content: center;
+            align-items: center;
+            background: white;
+            z-index: 1000;
+        }
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .splash-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            opacity: 0;
+            animation: fadeInText 1.5s ease forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="screen active">
+            <img src="https://i.pinimg.com/736x/92/f8/f9/92f8f92a91bf7de670dddb7b1171a250.jpg" alt="Logo" class="splash-logo">
+            <div class="splash-text">Nilechat</div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px; text-align: center;">
+                <img src="https://i.pinimg.com/736x/92/f8/f9/92f8f92a91bf7de670dddb7b1171a250.jpg" alt="Logo" class="splash-logo" style="width: 180px; height: 180px; margin-bottom: 10px;">
+                <div class="logo" style="color: var(--primary-dark); font-size: 3.5rem; margin-bottom: 50px;">Nilechat</div>
+                
+                <button class="btn" id="welcome-to-register" style="border-radius: 20px; padding: 14px; font-size: 1.1rem;">إنشاء حساب</button>
+                <button class="btn btn-alt" id="welcome-to-login" style="margin-top: 15px; font-size: 1rem; color: #475569;">لدي حساب بالفعل</button>
+            </div>
+        </div>
+
         <!-- Login Screen -->
-        <div id="login-screen" class="screen active">
+        <div id="login-screen" class="screen">
             <div class="logo">Nilechat</div>
             <div id="auth-title" class="subtitle">تواصل بنقاء النيل</div>
             
@@ -314,48 +736,220 @@
             </div>
             <div id="register-actions" style="display: none;">
                 <button class="btn" id="do-register">إنشاء الحساب</button>
-                <button class="btn btn-alt" id="show-login">العودة لتسجيل الدخول</button>
+                <button class="btn" style="background: #e0e7ff; color: var(--primary); margin-top: 10px;" id="show-login">رجوع لتسجيل الدخول</button>
             </div>
         </div>
 
         <!-- Rooms Screen -->
         <div id="rooms-screen" class="screen">
-            <header>
-                <h2>غرف الدردشة</h2>
-                <button class="back-btn" id="logout-btn">🚪</button>
-            </header>
+            <div class="rooms-header">
+                <button class="icon-btn" id="open-create-modal"><i data-lucide="plus"></i></button>
+                <h1>Nilechat</h1>
+                <button class="icon-btn" id="open-settings"><i data-lucide="settings"></i></button>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-bar">
+                    <span style="color: var(--primary)"><i data-lucide="search" style="width: 18px; height: 18px;"></i></span>
+                    <input type="text" id="room-search" placeholder="ابحث عن الغرف">
+                </div>
+            </div>
+
             <div class="rooms-list" id="rooms-list">
                 <!-- Rooms injected here -->
             </div>
-            <button class="add-room-btn" id="open-create-modal">+</button>
+
+            <div class="footer-nav">
+                <div class="nav-item" id="nav-all-rooms">
+                    <i data-lucide="globe"></i>
+                    <span>الكل</span>
+                </div>
+                <div class="nav-item active" id="nav-notifications">
+                    <i data-lucide="message-square"></i>
+                    <span>الرسائل</span>
+                </div>
+                <div class="nav-item" id="nav-my-rooms">
+                    <i data-lucide="home"></i>
+                    <span>غرفي</span>
+                </div>
+            </div>
         </div>
 
         <!-- Chat Screen -->
         <div id="chat-screen" class="screen">
-            <header>
-                <button class="back-btn" id="exit-chat">🔙</button>
-                <h2 id="active-room-title">اسم الغرفة</h2>
-                <div style="width: 30px"></div>
+            <header style="display: flex; align-items: center; gap: 10px; padding: 10px 20px;">
+                <button class="back-btn" id="exit-chat"><i data-lucide="arrow-right"></i></button>
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center;">
+                    <img id="active-room-img" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
+                    <h2 id="active-room-title" style="margin: 0; font-size: 1.2rem;">اسم الغرفة</h2>
+                </div>
+                <button class="icon-btn" id="open-members"><i data-lucide="users"></i></button>
             </header>
             <div class="chat-area" id="chat-msgs">
                 <!-- Messages injected here -->
             </div>
+            
+            <!-- Join Room Overlay -->
+            <div id="join-overlay" style="display: none; position: absolute; bottom: 0; left: 0; right: 0; top: 60px; background: rgba(255,255,255,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <i data-lucide="lock" style="width: 50px; height: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+                <h3 style="margin-bottom: 10px;">أنت لست عضواً في هذه الغرفة</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">يجب عليك الانضمام لتتمكن من رؤية الرسائل والمشاركة في الدردشة</p>
+                <button class="btn" id="join-room-btn" style="max-width: 200px;">انضمام للغرفة</button>
+            </div>
+
             <form class="chat-footer" id="msg-form">
-                <input type="text" id="msg-input" placeholder="اكتب رسالتك..." autocomplete="off">
-                <button type="submit" class="send-btn">🕊️</button>
+                <textarea id="msg-input" placeholder="اكتب رسالتك..." autocomplete="off" rows="1"></textarea>
+                <button type="submit" class="send-btn"><i data-lucide="send" style="width: 20px; height: 20px;"></i></button>
             </form>
+        </div>
+
+        <!-- Room Info Modal (For non-owners) -->
+        <div class="modal" id="room-info-modal">
+            <div class="modal-box">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img id="info-room-img" src="" style="width: 100px; height: 100px; border-radius: 20px; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 15px;">
+                    <h3 id="info-room-name" style="margin: 0; font-size: 1.4rem;">اسم الغرفة</h3>
+                    <p id="info-room-owner" style="color: var(--text-muted); margin-top: 5px; font-size: 0.9rem;">المالك: ...</p>
+                </div>
+                
+                <div class="input-group" style="background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 20px;">
+                    <label>كود الغرفة</label>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <span id="info-room-code" style="font-weight: bold; font-size: 1.1rem; color: var(--primary);">000000</span>
+                        <button class="icon-btn" id="copy-info-code" style="padding: 5px; background: var(--border);"><i data-lucide="copy" style="width: 16px; height: 16px;"></i></button>
+                    </div>
+                </div>
+
+                <button class="btn" style="background: #fee2e2; color: #ef4444;" id="leave-room-btn">خروج من الغرفة</button>
+                <button class="btn btn-alt" id="close-info-modal" style="margin-top: 10px;">إغلاق</button>
+            </div>
         </div>
 
         <!-- Create Room Modal -->
         <div class="modal" id="create-modal">
             <div class="modal-box">
-                <h3 style="margin-bottom: 20px">إنشاء غرفة جديدة</h3>
+                <h3 style="margin-bottom: 20px; text-align: center;">إنشاء غرفة جديدة</h3>
+                
+                <div class="img-picker" id="room-img-picker" style="background: var(--border); border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center;">
+                    <img id="room-img-preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    <div id="img-placeholder" style="color: var(--primary); font-size: 0.9rem; text-align: center;">اضغط لإضافة صورة</div>
+                    <input type="file" id="room-img-input" accept="image/*" style="display: none;">
+                </div>
+
                 <div class="input-group">
                     <label>اسم الغرفة</label>
                     <input type="text" id="new-room-name" placeholder="مثال: مبرمجي النيل">
                 </div>
+
+                <div class="input-group">
+                    <label>عدد الأشخاص المسموح به</label>
+                    <input type="number" id="new-room-limit" placeholder="مثال: 500" value="500">
+                </div>
+
                 <button class="btn" id="confirm-create">إنشاء الآن</button>
                 <button class="btn btn-alt" id="close-modal">إلغاء</button>
+            </div>
+        </div>
+
+        <!-- Edit Room Modal -->
+        <div class="modal" id="edit-room-modal">
+            <div class="modal-box">
+                <h3 style="margin-bottom: 20px; text-align: center;">تعديل الغرفة</h3>
+                
+                <div class="img-picker" id="edit-room-img-picker" style="background: var(--border); border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center;">
+                    <img id="edit-room-img-preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div id="edit-img-placeholder" style="color: var(--primary); font-size: 0.9rem; text-align: center; display: none;">اضغط لتغيير الصورة</div>
+                    <input type="file" id="edit-room-img-input" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="input-group">
+                    <label>اسم الغرفة</label>
+                    <input type="text" id="edit-room-name" placeholder="اسم الغرفة">
+                </div>
+
+                <div class="input-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 20px;">
+                    <label style="margin: 0;">السماح للأعضاء بإرسال رسائل</label>
+                    <input type="checkbox" id="edit-room-readonly" checked style="width: 20px; height: 20px;">
+                </div>
+
+                <div class="input-group" style="background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 20px;">
+                    <label>كود الغرفة</label>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <span id="edit-room-code-display" style="font-weight: bold; font-size: 1.1rem; color: var(--primary);">000000</span>
+                        <button class="icon-btn" id="copy-room-code" style="padding: 5px; background: var(--border);"><i data-lucide="copy" style="width: 16px; height: 16px;"></i></button>
+                    </div>
+                </div>
+
+                <button class="btn" id="save-room-changes">حفظ التغييرات</button>
+                <button class="btn" style="margin-top: 10px; background: #fee2e2; color: #ef4444;" id="delete-room-btn">حذف الغرفة</button>
+                <button class="btn btn-alt" id="close-edit-modal" style="margin-top: 10px;">إلغاء</button>
+            </div>
+        </div>
+
+        <!-- Room Members Modal -->
+        <div class="modal" id="members-modal">
+            <div class="modal-box" style="max-height: 80vh; display: flex; flex-direction: column;">
+                <h3 style="margin-bottom: 20px; text-align: center;">أعضاء الغرفة</h3>
+                <div id="members-list" style="flex: 1; overflow-y: auto; margin-bottom: 20px;">
+                    <!-- Members injected here -->
+                </div>
+                <button class="btn btn-alt" id="close-members-modal">إغلاق</button>
+            </div>
+        </div>
+
+        <!-- User Profile Modal -->
+        <div class="modal" id="user-profile-modal">
+            <div class="modal-box">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img id="view-user-img" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 15px;">
+                    <h3 id="view-user-name" style="margin: 0; font-size: 1.4rem;">اسم المستخدم</h3>
+                    <p id="view-user-bio" style="color: var(--text-muted); margin-top: 10px; font-size: 0.9rem;">النبذة الشخصية تظهر هنا...</p>
+                </div>
+                <button class="btn" id="start-dm-btn">مراسلة</button>
+                <button class="btn btn-alt" id="close-user-modal" style="margin-top: 10px;">إغلاق</button>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <header style="display: flex; align-items: center; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border);">
+                <button class="back-btn" id="close-settings"><i data-lucide="arrow-right"></i></button>
+                <h2 style="margin: 0; font-size: 1.3rem; flex: 1; text-align: center;">الملف الشخصي</h2>
+                <div style="width: 40px"></div>
+            </header>
+            
+            <div style="flex: 1; overflow-y: auto; padding: 30px 20px;">
+                <div class="img-picker" id="profile-img-picker" style="width: 120px; height: 120px; margin-bottom: 30px; border: 3px solid var(--primary);">
+                    <img id="profile-img-preview" src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" style="display: block;">
+                    <div style="position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--card);">
+                        <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
+                    </div>
+                    <input type="file" id="profile-img-input" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="input-group">
+                    <label>الاسم المستعار (Username)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: 700;">@</span>
+                        <input type="text" id="profile-username" placeholder="مثال: ahmed_nile" style="padding-left: 35px;">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>نبذة عني (Bio)</label>
+                    <textarea id="profile-bio" placeholder="اكتب شيئاً عن نفسك..." style="width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; outline: none; resize: none; font-size: 1rem; height: 100px;"></textarea>
+                </div>
+
+                <div class="theme-toggle" style="margin-bottom: 30px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="moon" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                        <span>الوضع المظلم</span>
+                    </div>
+                    <input type="checkbox" id="dark-mode-toggle" style="width: auto;">
+                </div>
+
+                <button class="btn" id="save-profile">حفظ التغييرات</button>
+                <button class="btn" style="margin-top: 20px; background: #fee2e2; color: #ef4444;" id="logout-btn">تسجيل الخروج</button>
             </div>
         </div>
     </div>
@@ -363,7 +957,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, serverTimestamp, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // Your Firebase Configuration
         const firebaseConfig = {
@@ -385,18 +979,55 @@
 
         // UI Helpers
         const ui = {
+            splash: document.getElementById('splash-screen'),
+            welcome: document.getElementById('welcome-screen'),
             login: document.getElementById('login-screen'),
             rooms: document.getElementById('rooms-screen'),
             chat: document.getElementById('chat-screen'),
+            settings: document.getElementById('settings-screen'),
             error: document.getElementById('auth-error'),
             roomsList: document.getElementById('rooms-list'),
             chatMsgs: document.getElementById('chat-msgs'),
             modal: document.getElementById('create-modal')
         };
 
+        const screenOrder = ['splash', 'welcome', 'login', 'rooms', 'chat', 'settings'];
+        let currentActiveScreen = 'splash';
+
         const switchScreen = (screenId) => {
-            [ui.login, ui.rooms, ui.chat].forEach(s => s.classList.remove('active'));
-            ui[screenId].classList.add('active');
+            if (screenId === currentActiveScreen) return;
+
+            const oldIdx = screenOrder.indexOf(currentActiveScreen);
+            const newIdx = screenOrder.indexOf(screenId);
+            const direction = newIdx > oldIdx ? 'forward' : 'backward';
+
+            const oldScreen = ui[currentActiveScreen];
+            const newScreen = ui[screenId];
+
+            // Reset classes
+            [ui.splash, ui.welcome, ui.login, ui.rooms, ui.chat, ui.settings].forEach(s => {
+                if (s) s.classList.remove('active', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
+            });
+
+            if (direction === 'forward') {
+                oldScreen.classList.add('active', 'slide-out-left');
+                newScreen.classList.add('slide-in-right');
+            } else {
+                oldScreen.classList.add('active', 'slide-out-right');
+                newScreen.classList.add('slide-in-left');
+            }
+
+            // Trigger reflow
+            newScreen.offsetWidth;
+
+            newScreen.classList.add('active');
+            newScreen.classList.remove('slide-in-left', 'slide-in-right');
+
+            setTimeout(() => {
+                oldScreen.classList.remove('active', 'slide-out-left', 'slide-out-right');
+                currentActiveScreen = screenId;
+                lucide.createIcons();
+            }, 400);
         };
 
         const formatEmail = (user) => `${user.trim().toLowerCase()}@nile.com`;
@@ -420,6 +1051,62 @@
 
         document.getElementById('show-register').onclick = showRegisterMode;
         document.getElementById('show-login').onclick = showLoginMode;
+
+        document.getElementById('welcome-to-register').onclick = () => {
+            showRegisterMode();
+            switchScreen('login');
+        };
+
+        document.getElementById('welcome-to-login').onclick = () => {
+            showLoginMode();
+            switchScreen('login');
+        };
+
+        // Ripple Effect Implementation
+        const createRipple = (event) => {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            const rect = button.getBoundingClientRect();
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - rect.left - radius}px`;
+            circle.style.top = `${event.clientY - rect.top - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        };
+
+        const attachRipples = () => {
+            const elements = document.querySelectorAll('.btn, .icon-btn, .nav-item, .room-card, .send-btn, .back-btn');
+            elements.forEach(el => {
+                if (!el.dataset.rippleAttached) {
+                    el.addEventListener('click', createRipple);
+                    el.dataset.rippleAttached = "true";
+                }
+            });
+        };
+
+        // Auto-expanding textarea
+        const msgInput = document.getElementById('msg-input');
+        msgInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        msgInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('msg-form').dispatchEvent(new Event('submit'));
+            }
+        });
 
         // Authentication Logic
         document.getElementById('do-register').onclick = async () => {
@@ -461,7 +1148,99 @@
 
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        onAuthStateChanged(auth, (user) => {
+        // Settings & Profile Logic
+        const profileImgInput = document.getElementById('profile-img-input');
+        const profileImgPreview = document.getElementById('profile-img-preview');
+        const profileUsername = document.getElementById('profile-username');
+        const profileBio = document.getElementById('profile-bio');
+        let selectedProfileImg = null;
+
+        document.getElementById('profile-img-picker').onclick = () => profileImgInput.click();
+
+        profileImgInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    selectedProfileImg = event.target.result;
+                    profileImgPreview.src = selectedProfileImg;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('save-profile').onclick = async () => {
+            if (!userSession) return;
+            const uid = userSession.uid;
+            const username = profileUsername.value.trim();
+            const bio = profileBio.value.trim();
+
+            const userRef = ref(db, `users/${uid}`);
+            await set(userRef, {
+                username: username || userSession.email.split('@')[0],
+                bio: bio || '',
+                img: selectedProfileImg || profileImgPreview.src,
+                email: userSession.email
+            });
+            alert('تم حفظ الملف الشخصي بنجاح!');
+            switchScreen('rooms');
+        };
+
+        const loadUserProfile = () => {
+            if (!userSession) return;
+            const userRef = ref(db, `users/${userSession.uid}`);
+            onValue(userRef, (snap) => {
+                const data = snap.val();
+                if (data) {
+                    profileUsername.value = data.username || '';
+                    profileBio.value = data.bio || '';
+                    if (data.img) {
+                        profileImgPreview.src = data.img;
+                        selectedProfileImg = data.img;
+                    }
+                }
+            });
+        };
+
+        document.getElementById('open-settings').onclick = () => {
+            // Load current profile into settings
+            if (userSession) {
+                const myUid = userSession.uid;
+                const myProfile = usersData[myUid] || {};
+                profileUsername.value = myProfile.username || userSession.email.split('@')[0];
+                profileBio.value = myProfile.bio || '';
+                profileImgPreview.src = myProfile.img || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+            }
+            switchScreen('settings');
+        };
+        document.getElementById('close-settings').onclick = () => switchScreen('rooms');
+        
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.onchange = (e) => {
+            if (e.target.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+        // Load theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+
+        let isSplashDone = false;
+        let pendingUser = null;
+
+        const handleAuthStateChange = (user) => {
+            if (!isSplashDone) {
+                pendingUser = user;
+                return;
+            }
+
             if (user) {
                 userSession = user;
                 switchScreen('rooms');
@@ -469,84 +1248,623 @@
             } else {
                 userSession = null;
                 showLoginMode();
-                switchScreen('login');
+                switchScreen('welcome');
             }
-        });
+        };
+
+        onAuthStateChanged(auth, handleAuthStateChange);
+        attachRipples();
+        lucide.createIcons();
+
+        // Splash Timer
+        setTimeout(() => {
+            isSplashDone = true;
+            handleAuthStateChange(pendingUser);
+        }, 3500);
 
         // Rooms Logic
+        let allRoomsData = {};
+        let allDMsData = {};
+        let currentFilter = 'all'; // 'all', 'my', 'notif'
+
         const syncRooms = () => {
             const roomsRef = ref(db, 'rooms');
             onValue(roomsRef, (snap) => {
-                ui.roomsList.innerHTML = '';
-                const data = snap.val();
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        const room = data[id];
-                        const el = document.createElement('div');
-                        el.className = 'room-card';
-                        el.innerHTML = `
-                            <div class="room-info">
-                                <div class="room-name">${room.name}</div>
-                                <div class="room-owner">بواسطة: ${room.owner}</div>
-                            </div>
-                            <span style="color: #0ea5e9">💬</span>
-                        `;
-                        el.onclick = () => startChat(id, room.name);
-                        ui.roomsList.appendChild(el);
-                    });
-                }
+                allRoomsData = snap.val() || {};
+                renderRooms();
             });
+
+            if (userSession) {
+                const dmRef = ref(db, `user_dms/${userSession.uid}`);
+                onValue(dmRef, (snap) => {
+                    allDMsData = snap.val() || {};
+                    if (currentFilter === 'notif') renderRooms();
+                });
+            }
         };
 
-        document.getElementById('open-create-modal').onclick = () => ui.modal.style.display = 'flex';
-        document.getElementById('close-modal').onclick = () => ui.modal.style.display = 'none';
+        const renderRooms = () => {
+            const searchTerm = document.getElementById('room-search').value.toLowerCase();
+            ui.roomsList.innerHTML = '';
+            
+            // Update active room header if we are in a chat
+            if (currentRoomId && userSession) {
+                if (allRoomsData[currentRoomId]) {
+                    const room = allRoomsData[currentRoomId];
+                    document.getElementById('active-room-title').innerText = room.name;
+                    const headerImg = document.getElementById('active-room-img');
+                    if (room.img) {
+                        headerImg.src = room.img;
+                        headerImg.style.display = 'block';
+                    } else {
+                        headerImg.style.display = 'none';
+                    }
+                } else if (currentRoomId.startsWith('dm_')) {
+                    const parts = currentRoomId.split('_');
+                    const otherUid = parts[1] === userSession.uid ? parts[2] : parts[1];
+                    const otherUser = usersData[otherUid] || { username: 'مستخدم' };
+                    document.getElementById('active-room-title').innerText = otherUser.username;
+                    const headerImg = document.getElementById('active-room-img');
+                    if (otherUser.img) {
+                        headerImg.src = otherUser.img;
+                        headerImg.style.display = 'block';
+                    } else {
+                        headerImg.style.display = 'none';
+                    }
+                }
+            }
+
+            if (currentFilter === 'notif') {
+                // Show DMs
+                const dmList = Object.keys(allDMsData).map(uid => ({ uid, ...allDMsData[uid] }));
+                // Sort by last message timestamp
+                dmList.sort((a, b) => (b.lastMessageTs || 0) - (a.lastMessageTs || 0));
+
+                dmList.forEach(dm => {
+                    const otherUid = dm.uid;
+                    const otherUser = usersData[otherUid] || { username: 'مستخدم', img: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' };
+                    
+                    if (searchTerm && !otherUser.username.toLowerCase().includes(searchTerm)) return;
+
+                    const el = document.createElement('div');
+                    el.className = 'room-card';
+                    
+                    const lastMsg = dm.lastMessage || 'لا توجد رسائل بعد';
+                    const lastMsgTime = dm.lastMessageTs ? new Date(dm.lastMessageTs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+                    el.innerHTML = `
+                        <div class="room-stats">
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">${lastMsgTime}</div>
+                        </div>
+                        <div class="room-details">
+                            <div class="room-name">${otherUser.username}</div>
+                            <div class="room-tag" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${lastMsg}</div>
+                        </div>
+                        <img src="${otherUser.img}" class="room-img" alt="User">
+                    `;
+                    el.onclick = (e) => {
+                        createRipple(e);
+                        startDM(otherUid);
+                    };
+                    ui.roomsList.appendChild(el);
+                });
+            }
+
+            Object.keys(allRoomsData).forEach(id => {
+                const room = allRoomsData[id];
+                const myName = userSession.email.split('@')[0];
+                
+                // Filtering by name or room code
+                const roomCode = room.code || id.substring(1, 7).toUpperCase();
+                const matchesSearch = !searchTerm || 
+                                     room.name.toLowerCase().includes(searchTerm) || 
+                                     roomCode.toLowerCase().includes(searchTerm);
+
+                if (currentFilter === 'my' && room.owner !== myName) return;
+                if (currentFilter === 'notif') return; // Handled above
+                if (!matchesSearch) return;
+
+                const el = document.createElement('div');
+                el.className = 'room-card';
+                
+                const roomImg = room.img || 'https://picsum.photos/seed/' + id + '/200';
+                const limit = room.limit || 500;
+                const membersCount = room.membersCount || 0;
+                
+                el.innerHTML = `
+                    <div class="room-stats">
+                        <div class="status-badge">متصل</div>
+                        <div class="participant-count">${membersCount}/${limit}</div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-name">${room.name}</div>
+                        <div class="room-tag">كود: ${roomCode}</div>
+                    </div>
+                    <img src="${roomImg}" class="room-img" alt="Room">
+                `;
+                el.onclick = (e) => {
+                    createRipple(e);
+                    startChat(id, room.name, roomImg);
+                };
+                ui.roomsList.appendChild(el);
+            });
+            attachRipples();
+        };
+
+        document.getElementById('room-search').oninput = renderRooms;
+
+        // Footer Nav Logic
+        const navItems = {
+            all: document.getElementById('nav-all-rooms'),
+            my: document.getElementById('nav-my-rooms'),
+            notif: document.getElementById('nav-notifications')
+        };
+
+        const showModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.style.display = 'flex';
+            // Trigger reflow
+            modal.offsetWidth;
+            modal.classList.add('active');
+        };
+
+        const hideModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 300);
+        };
+
+        const setActiveNav = (type) => {
+            if (currentFilter === type) return;
+            Object.values(navItems).forEach(item => item.classList.remove('active'));
+            navItems[type].classList.add('active');
+            currentFilter = type;
+            
+            // Smooth content transition
+            ui.roomsList.style.opacity = '0';
+            ui.roomsList.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                renderRooms();
+                ui.roomsList.style.opacity = '1';
+                ui.roomsList.style.transform = 'translateY(0)';
+            }, 150);
+        };
+
+        navItems.all.onclick = () => setActiveNav('all');
+        navItems.my.onclick = () => setActiveNav('my');
+        navItems.notif.onclick = () => setActiveNav('notif');
+
+        document.getElementById('open-create-modal').onclick = () => showModal('create-modal');
+        document.getElementById('close-modal').onclick = () => hideModal('create-modal');
+
+        // Image Picker Logic
+        const imgInput = document.getElementById('room-img-input');
+        const imgPreview = document.getElementById('room-img-preview');
+        const imgPlaceholder = document.getElementById('img-placeholder');
+        let selectedRoomImg = null;
+
+        document.getElementById('room-img-picker').onclick = () => imgInput.click();
+
+        imgInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    selectedRoomImg = event.target.result;
+                    imgPreview.src = selectedRoomImg;
+                    imgPreview.style.display = 'block';
+                    imgPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
         document.getElementById('confirm-create').onclick = async () => {
             const name = document.getElementById('new-room-name').value;
+            const limit = document.getElementById('new-room-limit').value;
             if (!name) return;
+            
+            // Generate a random 6-digit room code
+            const roomCode = Math.floor(100000 + Math.random() * 900000).toString();
+
             const rRef = ref(db, 'rooms');
             const newR = push(rRef);
+            const roomId = newR.key;
+
             await set(newR, {
                 name: name,
                 owner: userSession.email.split('@')[0],
+                ownerUid: userSession.uid,
+                limit: parseInt(limit) || 500,
+                img: selectedRoomImg,
+                code: roomCode,
+                membersCount: 1, // Creator is the first member
                 ts: serverTimestamp()
             });
+
+            // Add creator to members list
+            await set(ref(db, `room_members/${roomId}/${userSession.uid}`), {
+                uid: userSession.uid,
+                ts: serverTimestamp()
+            });
+            
+            // Reset
             document.getElementById('new-room-name').value = '';
+            document.getElementById('new-room-limit').value = '500';
+            imgPreview.style.display = 'none';
+            imgPlaceholder.style.display = 'block';
+            selectedRoomImg = null;
             ui.modal.style.display = 'none';
         };
 
         // Chat Logic
-        const startChat = (id, name) => {
+        const startChat = (id, name, img) => {
             currentRoomId = id;
+            const room = allRoomsData[id];
+            const myUid = userSession ? userSession.uid : null;
+            const isOwner = room && room.ownerUid === myUid;
+
             document.getElementById('active-room-title').innerText = name;
+            const headerImg = document.getElementById('active-room-img');
+            if (img) {
+                headerImg.src = img;
+                headerImg.style.display = 'block';
+            } else {
+                headerImg.style.display = 'none';
+            }
+
+            const joinOverlay = document.getElementById('join-overlay');
+            const msgForm = document.getElementById('msg-form');
+
+            if (!id.startsWith('dm_')) {
+                // Check membership
+                onValue(ref(db, `room_members/${id}/${myUid}`), (snap) => {
+                    const isMember = snap.exists();
+                    if (isMember || isOwner) {
+                        joinOverlay.style.display = 'none';
+                        msgForm.style.display = 'flex';
+                        
+                        // Header interaction for members
+                        const openModal = isOwner ? () => openEditRoomModal(id) : () => openRoomInfoModal(id);
+                        headerImg.style.cursor = 'pointer';
+                        headerImg.onclick = openModal;
+                        document.getElementById('active-room-title').onclick = openModal;
+                        document.getElementById('active-room-title').style.cursor = 'pointer';
+                    } else {
+                        joinOverlay.style.display = 'flex';
+                        msgForm.style.display = 'none';
+                        
+                        headerImg.onclick = null;
+                        document.getElementById('active-room-title').onclick = null;
+                        headerImg.style.cursor = 'default';
+                        document.getElementById('active-room-title').style.cursor = 'default';
+                    }
+                }, { onlyOnce: true });
+            } else {
+                // DMs are always accessible
+                joinOverlay.style.display = 'none';
+                msgForm.style.display = 'flex';
+                headerImg.onclick = null;
+                document.getElementById('active-room-title').onclick = null;
+                headerImg.style.cursor = 'default';
+                document.getElementById('active-room-title').style.cursor = 'default';
+            }
+
             switchScreen('chat');
             syncMessages(id);
         };
 
-        document.getElementById('exit-chat').onclick = () => {
+        const joinRoom = async () => {
+            if (!currentRoomId || !userSession) return;
+            const roomId = currentRoomId;
+            const myUid = userSession.uid;
+
+            // Add to members
+            await set(ref(db, `room_members/${roomId}/${myUid}`), {
+                uid: myUid,
+                ts: serverTimestamp()
+            });
+
+            // Increment count
+            const roomRef = ref(db, `rooms/${roomId}`);
+            onValue(roomRef, async (snap) => {
+                const room = snap.val();
+                if (room) {
+                    await update(roomRef, {
+                        membersCount: (room.membersCount || 0) + 1
+                    });
+                }
+            }, { onlyOnce: true });
+
+            // Refresh chat view
+            startChat(roomId, allRoomsData[roomId].name, allRoomsData[roomId].img);
+        };
+
+        const leaveRoom = async () => {
+            if (!currentRoomId || !userSession) return;
+            if (!confirm('هل أنت متأكد من الخروج من هذه الغرفة؟')) return;
+
+            const roomId = currentRoomId;
+            const myUid = userSession.uid;
+
+            // Remove from members
+            await remove(ref(db, `room_members/${roomId}/${myUid}`));
+
+            // Decrement count
+            const roomRef = ref(db, `rooms/${roomId}`);
+            onValue(roomRef, async (snap) => {
+                const room = snap.val();
+                if (room) {
+                    await update(roomRef, {
+                        membersCount: Math.max(0, (room.membersCount || 1) - 1)
+                    });
+                }
+            }, { onlyOnce: true });
+
+            hideModal('room-info-modal');
             currentRoomId = null;
             switchScreen('rooms');
         };
 
+        const openRoomInfoModal = (id) => {
+            const room = allRoomsData[id];
+            if (!room) return;
+
+            document.getElementById('info-room-img').src = room.img || '';
+            document.getElementById('info-room-name').innerText = room.name;
+            document.getElementById('info-room-owner').innerText = `المالك: ${room.owner}`;
+            document.getElementById('info-room-code').innerText = room.code || '000000';
+            
+            document.getElementById('copy-info-code').onclick = () => {
+                navigator.clipboard.writeText(room.code);
+                alert('تم نسخ الكود!');
+            };
+
+            showModal('room-info-modal');
+        };
+
+        document.getElementById('join-room-btn').onclick = joinRoom;
+        document.getElementById('leave-room-btn').onclick = leaveRoom;
+        document.getElementById('close-info-modal').onclick = () => hideModal('room-info-modal');
+
+        const startDM = (otherUid) => {
+            if (!userSession) return;
+            const myUid = userSession.uid;
+            const dmId = myUid < otherUid ? `dm_${myUid}_${otherUid}` : `dm_${otherUid}_${myUid}`;
+            
+            const otherUser = usersData[otherUid] || { username: 'مستخدم' };
+            
+            // Register DM for both users without overwriting metadata
+            update(ref(db, `user_dms/${myUid}/${otherUid}`), { active: true });
+            update(ref(db, `user_dms/${otherUid}/${myUid}`), { active: true });
+
+            startChat(dmId, otherUser.username, otherUser.img);
+        };
+
+        const openMembersModal = () => {
+            if (!currentRoomId || currentRoomId.startsWith('dm_')) return;
+            const mList = document.getElementById('members-list');
+            mList.innerHTML = '<p style="text-align: center; padding: 20px;">جاري التحميل...</p>';
+            
+            onValue(ref(db, `room_members/${currentRoomId}`), (snap) => {
+                const members = snap.val() || {};
+                mList.innerHTML = '';
+                
+                Object.keys(members).forEach(uid => {
+                    const user = usersData[uid] || { username: 'مستخدم', img: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' };
+                    const el = document.createElement('div');
+                    el.className = 'user-item';
+                    el.innerHTML = `
+                        <img src="${user.img}" alt="Avatar">
+                        <div class="user-info">
+                            <div class="user-name">${user.username}</div>
+                            <div class="user-status">متصل</div>
+                        </div>
+                    `;
+                    el.onclick = () => {
+                        hideModal('members-modal');
+                        openUserProfile(uid);
+                    };
+                    mList.appendChild(el);
+                });
+                if (Object.keys(members).length === 0) {
+                    mList.innerHTML = '<p style="text-align: center; padding: 20px;">لا يوجد أعضاء</p>';
+                }
+            }, { onlyOnce: true });
+            
+            showModal('members-modal');
+        };
+
+        const openUserProfile = (uid) => {
+            const user = usersData[uid] || { username: 'مستخدم', bio: 'لا توجد نبذة', img: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' };
+            document.getElementById('view-user-img').src = user.img;
+            document.getElementById('view-user-name').innerText = user.username;
+            document.getElementById('view-user-bio').innerText = user.bio || 'لا توجد نبذة';
+            
+            const dmBtn = document.getElementById('start-dm-btn');
+            if (userSession && uid === userSession.uid) {
+                dmBtn.style.display = 'none';
+            } else {
+                dmBtn.style.display = 'block';
+                dmBtn.onclick = () => {
+                    hideModal('user-profile-modal');
+                    startDM(uid);
+                };
+            }
+            
+            showModal('user-profile-modal');
+        };
+
+        // Make it global for inline onclicks
+        window.openUserProfile = openUserProfile;
+
+        document.getElementById('open-members').onclick = openMembersModal;
+        document.getElementById('close-members-modal').onclick = () => hideModal('members-modal');
+        document.getElementById('close-user-modal').onclick = () => hideModal('user-profile-modal');
+
+        const openEditRoomModal = (id) => {
+            const room = allRoomsData[id];
+            document.getElementById('edit-room-name').value = room.name;
+            document.getElementById('edit-room-readonly').checked = room.allowMessages !== false;
+            document.getElementById('edit-room-code-display').innerText = room.code || id.substring(1, 7).toUpperCase();
+            
+            const editImgPreview = document.getElementById('edit-room-img-preview');
+            const editImgPlaceholder = document.getElementById('edit-img-placeholder');
+            
+            if (room.img) {
+                editImgPreview.src = room.img;
+                editImgPreview.style.display = 'block';
+                editImgPlaceholder.style.display = 'none';
+            } else {
+                editImgPreview.style.display = 'none';
+                editImgPlaceholder.style.display = 'block';
+            }
+            
+            selectedEditRoomImg = null;
+            showModal('edit-room-modal');
+        };
+
+        const editImgInput = document.getElementById('edit-room-img-input');
+        const editImgPreview = document.getElementById('edit-room-img-preview');
+        const editImgPlaceholder = document.getElementById('edit-img-placeholder');
+        let selectedEditRoomImg = null;
+
+        document.getElementById('edit-room-img-picker').onclick = () => editImgInput.click();
+
+        editImgInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    selectedEditRoomImg = event.target.result;
+                    editImgPreview.src = selectedEditRoomImg;
+                    editImgPreview.style.display = 'block';
+                    editImgPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('save-room-changes').onclick = async () => {
+            if (!currentRoomId) return;
+            const name = document.getElementById('edit-room-name').value;
+            const allowMessages = document.getElementById('edit-room-readonly').checked;
+            
+            const rRef = ref(db, `rooms/${currentRoomId}`);
+            const updates = {
+                name: name,
+                allowMessages: allowMessages
+            };
+            if (selectedEditRoomImg) updates.img = selectedEditRoomImg;
+            
+            await update(rRef, updates);
+            document.getElementById('edit-room-modal').style.display = 'none';
+            alert('تم تحديث بيانات الغرفة!');
+        };
+
+        document.getElementById('delete-room-btn').onclick = async () => {
+            if (!currentRoomId) return;
+            if (confirm('هل أنت متأكد من حذف هذه الغرفة نهائياً؟')) {
+                const rRef = ref(db, `rooms/${currentRoomId}`);
+                const mRef = ref(db, `messages/${currentRoomId}`);
+                await remove(rRef);
+                await remove(mRef);
+                document.getElementById('edit-room-modal').style.display = 'none';
+                switchScreen('rooms');
+                alert('تم حذف الغرفة بنجاح');
+            }
+        };
+
+        document.getElementById('copy-room-code').onclick = () => {
+            const code = document.getElementById('edit-room-code-display').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('تم نسخ الكود: ' + code);
+            });
+        };
+
+        document.getElementById('close-edit-modal').onclick = () => {
+            hideModal('edit-room-modal');
+        };
+
+        document.getElementById('exit-chat').onclick = () => {
+            currentRoomId = null;
+            lastMessageIds.clear();
+            switchScreen('rooms');
+        };
+
+        let lastMessageIds = new Set();
+        let usersData = {};
+
+        // Listen to all users to keep avatars updated
+        onValue(ref(db, 'users'), (snap) => {
+            usersData = snap.val() || {};
+            // Re-render messages if users data changes (optional, but good for real-time avatar updates)
+            // For now, we only care about new messages or when we first load.
+        });
+
         const syncMessages = (roomId) => {
+            // Clear previous messages and tracking
+            ui.chatMsgs.innerHTML = '';
+            lastMessageIds.clear();
+
             const mRef = ref(db, `messages/${roomId}`);
             onValue(mRef, (snap) => {
-                ui.chatMsgs.innerHTML = '';
                 const data = snap.val();
-                if (data) {
-                    Object.values(data).forEach(m => {
-                        const myName = userSession.email.split('@')[0];
-                        const isMe = m.sender === myName;
-                        const div = document.createElement('div');
-                        div.className = `msg ${isMe ? 'sent' : 'received'}`;
-                        div.innerHTML = `
-                            <span class="sender-name">${m.sender}</span>
-                            ${m.text}
-                        `;
-                        ui.chatMsgs.appendChild(div);
-                    });
-                    ui.chatMsgs.scrollTop = ui.chatMsgs.scrollHeight;
+                if (!data) {
+                    ui.chatMsgs.innerHTML = '';
+                    lastMessageIds.clear();
+                    return;
                 }
+
+                const myUid = userSession ? userSession.uid : null;
+                if (!myUid) return;
+                
+                Object.keys(data).forEach((id) => {
+                    if (!lastMessageIds.has(id)) {
+                        const m = data[id];
+                        const isMe = m.senderUid === myUid;
+                        
+                        const div = document.createElement('div');
+                        div.className = `msg-wrapper ${isMe ? 'sent' : 'received'}`;
+                        
+                        // Find sender in usersData
+                        let senderImg = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+                        let displayName = m.sender;
+
+                        if (m.senderUid && usersData[m.senderUid]) {
+                            senderImg = usersData[m.senderUid].img || senderImg;
+                            displayName = usersData[m.senderUid].username || displayName;
+                        }
+                        
+                        if (isMe) {
+                            div.innerHTML = `
+                                <div class="msg sent">
+                                    <span class="sender-name" style="cursor: pointer;" onclick="openUserProfile('${m.senderUid}')">${displayName}</span>
+                                    ${m.text}
+                                </div>
+                            `;
+                        } else {
+                            div.innerHTML = `
+                                <img src="${senderImg}" class="user-avatar" alt="Avatar" style="cursor: pointer;" onclick="openUserProfile('${m.senderUid}')">
+                                <div class="msg received">
+                                    <span class="sender-name" style="cursor: pointer;" onclick="openUserProfile('${m.senderUid}')">${displayName}</span>
+                                    ${m.text}
+                                </div>
+                            `;
+                        }
+
+                        ui.chatMsgs.appendChild(div);
+                        lastMessageIds.add(id);
+                        ui.chatMsgs.scrollTop = ui.chatMsgs.scrollHeight;
+                    }
+                });
             });
         };
 
@@ -556,14 +1874,47 @@
             const val = input.value.trim();
             if (!val || !currentRoomId) return;
 
+            const room = allRoomsData[currentRoomId];
+            const myUid = userSession ? userSession.uid : null;
+            if (!myUid) return;
+
+            if (room) {
+                const myName = userSession.email.split('@')[0];
+                const isOwner = room.owner === myName;
+                if (room.allowMessages === false && !isOwner) {
+                    alert('عذراً، إرسال الرسائل معطل في هذه الغرفة حالياً.');
+                    return;
+                }
+            }
+
             const mRef = ref(db, `messages/${currentRoomId}`);
             const newM = push(mRef);
+            
+            // Get current user's profile for the message
+            const myProfile = usersData[myUid] || {};
+
             await set(newM, {
                 text: val,
-                sender: userSession.email.split('@')[0],
+                sender: myProfile.username || userSession.email.split('@')[0],
+                senderUid: myUid,
                 ts: serverTimestamp()
             });
+
+            // Update DM metadata if it's a DM
+            if (currentRoomId.startsWith('dm_')) {
+                const parts = currentRoomId.split('_');
+                const otherUid = parts[1] === myUid ? parts[2] : parts[1];
+                const dmUpdate = {
+                    lastMessage: val,
+                    lastMessageTs: serverTimestamp(),
+                    senderUid: myUid
+                };
+                update(ref(db, `user_dms/${myUid}/${otherUid}`), dmUpdate);
+                update(ref(db, `user_dms/${otherUid}/${myUid}`), dmUpdate);
+            }
+
             input.value = '';
+            input.style.height = 'auto'; // Reset height
         };
 
     </script>
